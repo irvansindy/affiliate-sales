@@ -1,0 +1,46 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/Admin/**/*';
+@source '../../../../app/Filament/Affiliate/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    --radius-lg: 0.5rem;
+    --radius-xl: 0.75rem;
+    --radius-2xl: 1rem;
+}
+
+:root {
+    --affiliatehub-primary: #4f46e5;
+    --affiliatehub-primary-hover: #4338ca;
+    --affiliatehub-primary-soft: #eef2ff;
+    --affiliatehub-background: #f8fafc;
+    --affiliatehub-surface: #ffffff;
+    --affiliatehub-border: #e2e8f0;
+    --affiliatehub-text: #0f172a;
+    --affiliatehub-text-muted: #64748b;
+}
+
+.dark {
+    --affiliatehub-background: #0b1120;
+    --affiliatehub-surface: #111827;
+    --affiliatehub-border: #1f2937;
+    --affiliatehub-text: #f1f5f9;
+    --affiliatehub-text-muted: #94a3b8;
+}
+
+.fi-body {
+    background-color: var(--affiliatehub-background);
+    color: var(--affiliatehub-text);
+}
+
+.fi-section,
+.fi-sidebar,
+.fi-topbar nav {
+    border-color: var(--affiliatehub-border);
+}
+
+.fi-ta-text-item-label,
+.tabular-nums {
+    font-variant-numeric: tabular-nums;
+}

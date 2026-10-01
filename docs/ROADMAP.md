@@ -19,13 +19,14 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] Migrasi, enum, dan model awal (users+role, affiliates, products, referral_clicks, webhook_events, transactions, payouts, commissions, audit_logs, settings)
 - [x] Seeder: setting default (rate 10, masa tunggu 14 hari, minimum payout 100000) dan akun admin dari `.env`
 - [x] `CommissionCalculator` dan `CreateCommissionForTransaction` beserta test
+- [x] T1: panel Filament `/admin` dan `/affiliate`, theme, serta akses berbasis role/status affiliator
 
 ### Perlu dipastikan lebih dulu (T0)
-- [ ] `php artisan test` hijau (test komisi sudah ditulis tetapi belum pernah dijalankan di proyek ini). Perbaiki kegagalan sebelum tugas lain.
+- [x] `php artisan test` hijau (28 test, 53 assertion pada penyelesaian T1).
 
 ## Tugas berikutnya (urut)
 
-### T1. Panel Filament dan akses berbasis role
+### T1. Panel Filament dan akses berbasis role — Selesai
 - Pasang Filament (versi terbaru yang kompatibel dengan Laravel 13; catat versinya di `AGENTS.md` setelah terpasang).
 - Buat dua panel: `/admin` dan `/affiliate`.
 - `User` mengimplementasikan `FilamentUser::canAccessPanel`: admin hanya ke `/admin`; affiliator **berstatus `active`** hanya ke `/affiliate`.
