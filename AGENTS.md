@@ -2,7 +2,7 @@
 
 ## Project Context
 
-AffiliateHub adalah website manajemen affiliator untuk penjualan produk (website dan mobile apps) dengan dua skema pembelian: **subscription** dan **beli lepas**. Affiliator mendapat komisi **10%** dari total harga. Hanya ada dua role: **admin** dan **affiliator**.
+AffiliateHub adalah website manajemen affiliator untuk penjualan produk (website dan mobile apps) dengan dua skema pembelian: **subscription** dan **beli lepas**. Scope CRM sederhana mencakup kontak pelanggan, prospek, dan tindak lanjut milik affiliator. Affiliator mendapat komisi **10%** dari harga kotor produk sebelum PPN pada penjualan awal. Hanya ada dua role: **admin** dan **affiliator**.
 
 **Stack:** Laravel 13 (PHP 8.3+), Filament 5.9, Livewire 4 (versi bawaan Filament), Tailwind CSS 4, MySQL 8, Redis, Docker.
 
@@ -37,6 +37,7 @@ Lalu:
 - Hanya ada dua role: `admin` dan `affiliate`. Disimpan sebagai enum `role` di tabel `users`. **Jangan** menambah package role/permission (Spatie dsb.) atau role baru.
 - Gunakan **Policy** untuk setiap model; Filament Resource wajib memakai Policy.
 - Affiliator hanya boleh mengakses data miliknya. Selalu scope query dengan `affiliate_id` milik user yang login.
+- Aturan yang sama berlaku untuk kontak, prospek, dan aktivitas CRM. Kontak yang dipilih pada prospek harus dimiliki affiliator yang sama; verifikasi di server.
 - Otorisasi diverifikasi di server, bukan hanya dengan menyembunyikan tombol di UI.
 - Panel admin dan panel affiliator terpisah; user dengan role salah tidak boleh masuk panel lain.
 
@@ -49,6 +50,7 @@ Lalu:
 - `discount_amount` dicatat terpisah untuk pelaporan dan tidak boleh mengurangi `base_amount`.
 - Kontrak webhook ada di `docs/ARCHITECTURE.md` (*Webhook Contract*). Jangan mengubah format payload tanpa persetujuan; verifikasi signature dan idempotensi wajib.
 - Transaksi masuk lewat webhook dan input manual admin; keduanya wajib memakai Action `RecordTransaction` yang sama.
+- Tahap prospek CRM, termasuk `won`, tidak membuat transaksi atau komisi. Jangan menghubungkan aksi CRM langsung ke `CommissionCalculator`.
 - Refund sebelum komisi `paid`: batalkan komisi. Refund setelah `paid`: komisi tetap dibayarkan (tanpa clawback) dan dicatat di audit log. Logika ini hanya di Action `HandleRefund`.
 - Masa tunggu approval 14 hari dan minimum payout Rp 100.000 dibaca dari `settings`, bukan hard-coded.
 - Rate komisi disalin (snapshot) ke tiap record komisi. Jangan menghitung ulang komisi lama memakai rate baru.

@@ -22,6 +22,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T1: panel Filament `/admin` dan `/affiliate`, theme, serta akses berbasis role/status affiliator
 - [x] T2: registrasi affiliator pending, Resource admin, approve/reject/suspend/reaktivasi, audit log, dan Policy untuk semua model
 - [x] T3: Resource admin produk dengan create/edit, pencarian, filter, status aktif/nonaktif, dan Policy admin
+- [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
 ### Perlu dipastikan lebih dulu (T0)
 - [x] `php artisan test` hijau (28 test, 53 assertion pada penyelesaian T1).
@@ -91,7 +92,19 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Widget ringkasan (penjualan, komisi, top affiliator, tren).
 - Ekspor CSV/Excel lewat queue.
 
-### T12. Produksi
+### T12. CRM: kontak dan fondasi prospek
+- Tambahkan migrasi/model/factory untuk kontak, prospek, dan aktivitas CRM tanpa mengubah migrasi lama atau kontrak webhook.
+- Kontak dan prospek wajib dimiliki satu affiliator; produk pada prospek mengacu ke `products`. Validasi kontak dan prospek harus milik affiliator yang sama.
+- Policy dan query membatasi affiliator aktif ke data miliknya; admin boleh mengelola semua. Test akses lintas affiliator, termasuk URL record langsung dan aktivitas.
+- Resource kontak pada panel admin dan affiliate: daftar, cari, tambah, ubah. Gunakan teks Bahasa Indonesia, filter/pagination, serta state loading/empty/error.
+
+### T13. CRM: pipeline dan tindak lanjut
+- Resource prospek pada kedua panel: pilih kontak/produk, tahap `new|contacted|proposal|negotiation|won|lost`, daftar dan filter per tahap.
+- Catat aktivitas interaksi dan tindak lanjut dengan waktu jatuh tempo serta aksi tandai selesai. Tampilkan tindak lanjut yang lewat jadwal.
+- Tahap `won` tidak membuat transaksi atau komisi. Penjualan berbayar tetap melewati `RecordTransaction` dari webhook atau input manual admin.
+- Test validasi kepemilikan, perubahan tahap, jadwal tindak lanjut, dan isolasi CRM dari alur uang.
+
+### T14. Produksi
 - Docker (nginx + php-fpm + MySQL + Redis + queue worker + scheduler), `.env` produksi, backup database, HTTPS.
 
 ## Area yang wajib direview manusia sebelum merge

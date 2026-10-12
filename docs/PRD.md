@@ -3,8 +3,8 @@
 ## Product Overview
 
 **Produk:** Affiliate Management Platform (nama sementara: *AffiliateHub*)
-**Deskripsi singkat:** Website untuk mengelola affiliator marketing/sales yang menjual produk kami (website dan mobile apps), mencatat penjualan, menghitung komisi 10%, dan mengelola pembayaran komisi.
-**Visi:** Setiap affiliator bisa melihat penjualan dan komisinya secara transparan, dan admin bisa mengelola seluruh program affiliate tanpa spreadsheet manual.
+**Deskripsi singkat:** Website untuk mengelola affiliator marketing/sales yang menjual produk kami (website dan mobile apps), mencatat prospek dan tindak lanjut pelanggan, mencatat penjualan, menghitung komisi 10%, dan mengelola pembayaran komisi.
+**Visi:** Setiap affiliator bisa mengelola prospek serta melihat penjualan dan komisinya secara transparan, sementara admin mengawasi proses penjualan dan program affiliate tanpa spreadsheet manual.
 
 ## Problem
 
@@ -12,6 +12,7 @@
 - Perhitungan komisi manual rawan salah dan memakan waktu.
 - Affiliator tidak punya tempat untuk memantau penjualan, status komisi, dan pencairan.
 - Admin tidak punya satu tampilan untuk melihat performa program affiliate.
+- Kontak calon pelanggan, tahap penawaran, dan jadwal tindak lanjut tersebar di luar sistem sehingga perkembangan penjualan sulit dipantau.
 
 ## Goal
 
@@ -19,6 +20,7 @@
 2. Komisi 10% dihitung otomatis dan dapat diaudit.
 3. Affiliator dapat memantau penjualan dan komisi secara mandiri (self-service).
 4. Admin dapat mengelola affiliator, penjualan, komisi, dan pembayaran dalam satu sistem.
+5. Affiliator dapat mencatat kontak, memantau prospek hingga keputusan pelanggan, dan menjadwalkan tindak lanjut; admin dapat mengawasi seluruhnya.
 
 ## Target Users
 
@@ -26,8 +28,8 @@ Hanya ada **dua role**:
 
 | Role | Siapa | Tujuan utama |
 |------|-------|--------------|
-| **Admin** | Tim internal yang mengelola program affiliate | Mengelola affiliator, memverifikasi penjualan, menyetujui komisi, mencatat pembayaran |
-| **Affiliator** | Marketing/sales mitra yang menjual produk | Mendapat link referral, memantau penjualan dan komisi, melihat riwayat pembayaran |
+| **Admin** | Tim internal yang mengelola program affiliate | Mengawasi prospek, mengelola affiliator, memverifikasi penjualan, menyetujui komisi, mencatat pembayaran |
+| **Affiliator** | Marketing/sales mitra yang menjual produk | Mengelola kontak dan prospek miliknya, menindaklanjuti pelanggan, memantau penjualan dan komisi |
 
 Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, tidak ada sub-affiliator/multi-level).
 
@@ -40,8 +42,8 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 2. **Beli lepas (one-time purchase)** — pelanggan membayar sekali.
 
 **Aturan komisi:**
-- Komisi affiliator = **10% dari total harga** transaksi.
-- Rate disimpan sebagai pengaturan (default 10%) dan **disalin (snapshot) ke setiap transaksi** agar perubahan rate di masa depan tidak mengubah komisi lama.
+- Komisi affiliator = **10% dari `base_amount`** pada penjualan awal.
+- Rate disimpan sebagai pengaturan (default 10%) dan **disalin (snapshot) ke setiap komisi** agar perubahan rate di masa depan tidak mengubah komisi lama.
 - **Dasar komisi** = harga kotor produk (harga dasar/*list price*), **sebelum PPN**. PPN tidak ikut dihitung dan nilai ini tidak dikurangi diskon. Disimpan sebagai `base_amount` pada transaksi.
 - **Subscription:** komisi hanya untuk **penjualan awal** (pembayaran pertama). Perpanjangan/renewal **tidak** menghasilkan komisi.
 - **Beli lepas:** komisi 10% dari harga kotor produk pada penjualan tersebut.
@@ -61,6 +63,9 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Daftar komisi dan statusnya.
 - Riwayat pembayaran komisi.
 - Profil dan data rekening pembayaran.
+- Kontak calon pelanggan miliknya: nama, email/telepon, dan perusahaan bila ada.
+- Prospek miliknya per produk dengan tahapan penjualan dan catatan komunikasi.
+- Daftar tindak lanjut terjadwal dan penanda selesai.
 
 ### Untuk Admin
 - Dashboard ringkasan: penjualan, komisi, top affiliator, tren per periode.
@@ -73,6 +78,15 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Pengaturan: rate komisi default, masa tunggu approval, minimum payout.
 - Ekspor laporan (CSV/Excel).
 - Audit log aktivitas penting.
+- Tampilan seluruh kontak, prospek, tahapan penjualan, dan tindak lanjut affiliator.
+
+### CRM sederhana
+- Satu kontak dapat memiliki lebih dari satu prospek; setiap kontak dan prospek dimiliki oleh satu affiliator. Kontak yang sama dapat dicatat terpisah oleh affiliator berbeda.
+- Tahapan prospek: `new` (baru), `contacted` (dihubungi), `proposal` (penawaran), `negotiation` (negosiasi), `won` (menang), `lost` (kalah). Affiliator memperbarui tahapan berdasarkan perkembangan nyata; admin dapat mengoreksi.
+- Catatan aktivitas mencatat jenis interaksi, waktu, dan ringkasan. Tindak lanjut memiliki tanggal/jam jatuh tempo dan dapat ditandai selesai.
+- Admin melihat seluruh data CRM. Affiliator hanya dapat melihat dan mengubah kontak, prospek, serta aktivitas miliknya. Kontak pada prospek harus milik affiliator yang sama.
+- Status `won` adalah catatan hasil prospek, bukan bukti pembayaran. Hanya transaksi yang dicatat melalui `RecordTransaction` dapat menghasilkan komisi; perubahan tahap CRM tidak membuat atau mengubah transaksi maupun komisi.
+- Data CRM diisi melalui panel; webhook transaksi tetap memakai kontrak yang ada. Pencocokan otomatis kontak dengan data pelanggan dari webhook tidak termasuk versi 1.
 
 ## User Flows
 
@@ -92,6 +106,9 @@ Admin memilih komisi `approved` per affiliator → membuat payout → transfer m
 **Flow 5 — Subscription**
 Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% dibuat. Pembayaran perpanjangan tetap dicatat sebagai transaksi (untuk pelaporan) tetapi **tidak** menghasilkan komisi. Perubahan paket (upgrade/downgrade) juga dicatat tanpa komisi.
 
+**Flow 6 — Prospek dan tindak lanjut**
+Affiliator menyimpan kontak → membuat prospek untuk produk → mencatat interaksi dan jadwal tindak lanjut → memperbarui tahap penjualan menjadi menang atau kalah. Jika pelanggan membayar, transaksi tetap masuk lewat webhook atau input manual admin sesuai Flow 2.
+
 ## Requirements
 
 ### Functional
@@ -101,6 +118,8 @@ Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% d
 - Perubahan status komisi dan payout tercatat di audit log.
 - Affiliator hanya dapat melihat data miliknya sendiri.
 - Pencegahan self-referral (affiliator tidak boleh mendapat komisi dari pembelian sendiri).
+- Kontak, prospek, dan aktivitas CRM dibatasi berdasarkan pemilik di Policy dan query server; affiliator tidak dapat mengakses data affiliator lain melalui URL atau permintaan langsung.
+- Perubahan tahapan CRM tidak memicu `RecordTransaction` atau `CreateCommissionForTransaction`.
 
 ### UX
 - Bahasa antarmuka: Bahasa Indonesia (siap multi-bahasa).
@@ -118,6 +137,7 @@ Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% d
 ### Security
 - Autentikasi aman, rate limiting login, validasi input, otorisasi di sisi server.
 - Data rekening pembayaran dilindungi dan tidak tampil penuh di UI.
+- Data kontak pelanggan hanya tersedia untuk admin dan affiliator pemiliknya; tidak ada akun pelanggan atau endpoint CRM publik pada versi 1.
 
 ## Success Metrics
 
@@ -126,6 +146,7 @@ Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% d
 - Waktu rata-rata dari komisi `approved` hingga `paid`.
 - Jumlah affiliator aktif (minimal 1 penjualan per bulan).
 - Waktu admin untuk rekap komisi bulanan (target turun signifikan).
+- Jumlah prospek per tahapan dan tindak lanjut yang melewati jadwal, ditampilkan terpisah dari metrik transaksi berbayar.
 
 ## Out of Scope (Versi 1)
 
@@ -139,6 +160,7 @@ Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% d
 - Komisi dari perpanjangan subscription dan dari upgrade/downgrade paket.
 - Diskon untuk pelanggan yang memakai kode referral (direncanakan setelah sistem stabil).
 - Pemotongan komisi (clawback) atas refund yang terjadi setelah komisi dibayar.
+- Otomatisasi kampanye email/WhatsApp, integrasi inbox, penilaian prospek berbasis AI, tiket dukungan, dan impor kontak otomatis dari webhook.
 
 ## Keputusan Bisnis
 
@@ -152,6 +174,8 @@ Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% d
 | 6 | Diskon kode referral | Belum ada; akan dibuat setelah sistem stabil |
 | 7 | Upgrade/downgrade subscription | Bukan penjualan baru, tidak berkomisi |
 | 8 | Diskon pada transaksi | Dicatat terpisah untuk pelaporan; dasar komisi tetap harga kotor |
+| 9 | Scope CRM | Kontak, prospek bertahap, catatan interaksi, dan tindak lanjut untuk affiliator; admin mengawasi seluruhnya |
+| 10 | Hubungan CRM dan komisi | Tahap prospek tidak menghasilkan transaksi atau komisi; sumber transaksi tetap webhook dan input manual admin |
 
 ## Masih Terbuka
 

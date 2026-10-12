@@ -9,7 +9,8 @@ Sistem Checkout / Admin input ──(webhook / manual)──┐                 
                                                     ▼                 ▼
 Admin ───────┐                              ┌───────────────────────────────┐
              ├──► Filament Panel ─────────► │  Laravel Application          │
-Affiliator ──┘    (/admin, /affiliate)      │  Actions · Services · Policies│
+Affiliator ──┘    (/admin, /affiliate)      │  CRM · Actions · Services      │
+                                            │  Policies                     │
                                             └──────┬─────────────┬──────────┘
                                                    │             │
                                             MySQL 8        Redis (cache, queue)
@@ -78,8 +79,8 @@ docker/                 # Dockerfile, nginx conf
 
 | Panel | Path | Role | Isi |
 |-------|------|------|-----|
-| Admin | `/admin` | `admin` | Semua data dan pengaturan |
-| Affiliate | `/affiliate` | `affiliate` (status `active`) | Hanya data milik sendiri |
+| Admin | `/admin` | `admin` | Semua data, termasuk CRM, dan pengaturan |
+| Affiliate | `/affiliate` | `affiliate` (status `active`) | Hanya data dan CRM milik sendiri |
 
 Gate panel Filament + Policy memastikan role tidak dapat saling mengakses.
 Implementasi panel memakai middleware autentikasi Filament dengan `User::canAccessPanel()`. Policy model ditemukan otomatis oleh Laravel; Resource admin Affiliate memakainya untuk akses daftar/detail dan aksi status.
@@ -124,6 +125,24 @@ settings            key, value  (default_commission_rate=10, approval_delay_days
                                  min_payout=100000)
 ```
 
+### Model CRM yang direncanakan
+
+Tabel berikut ditambahkan lewat migrasi baru pada tugas CRM; belum termasuk skema yang sudah terpasang.
+
+```
+crm_contacts        id, affiliate_id, name, email?, phone?, company?, timestamps
+crm_leads           id, affiliate_id, contact_id, product_id, stage,
+                    notes?, timestamps
+crm_activities      id, lead_id, author_user_id, type, summary,
+                    occurred_at?, due_at?, completed_at?, timestamps
+```
+
+- `crm_contacts.affiliate_id` dan `crm_leads.affiliate_id` menentukan pemilik. Kontak pada prospek harus milik affiliator yang sama; validasi ini dilakukan di server.
+- Admin dapat melihat dan mengelola semua record. Affiliator aktif hanya dapat melihat dan mengubah record miliknya, termasuk aktivitas melalui relasi prospek. Policy dan query Resource sama-sama membatasi akses.
+- `crm_leads.stage` menggunakan enum `new|contacted|proposal|negotiation|won|lost`. `crm_activities.type` membedakan catatan interaksi dan tindak lanjut; tindak lanjut memiliki `due_at` serta `completed_at` saat selesai.
+- Tambahkan indeks pada `affiliate_id`, `contact_id`, `lead_id`, `stage`, dan `due_at` sesuai query daftar/filter. Data kontak tidak tersedia melalui endpoint publik.
+- `transactions.customer_name` dan `customer_email` tetap merupakan snapshot dari sumber transaksi. CRM tidak melakukan pencocokan otomatis dengan data tersebut pada versi 1.
+
 Catatan desain:
 - Uang disimpan sebagai **bigint rupiah**.
 - `commissions.transaction_id` bersifat **unique** agar pembuatan komisi idempoten.
@@ -151,6 +170,11 @@ Transisi hanya lewat Action tertentu dan selalu menulis `audit_logs`.
 1. Pelanggan membuka `https://domain/r/{referral_code}`.
 2. `ReferralRedirectController` memvalidasi kode, mencatat klik, menyimpan cookie (30 hari, *last-click*), lalu redirect ke halaman produk.
 3. Saat pembelian, kode referral dibawa ke transaksi (parameter/metadata checkout).
+
+**CRM**
+1. Affiliator aktif mencatat kontak miliknya, membuat prospek untuk produk yang dipilih, lalu memperbarui tahap dan mencatat aktivitas atau jadwal tindak lanjut.
+2. Admin memantau seluruh prospek dan dapat memperbaiki data. Setiap operasi tulis memverifikasi kepemilikan kontak, prospek, dan aktivitas di server.
+3. Tahap `won` hanya menandai hasil prospek. Pembayaran tetap dicatat melalui `RecordTransaction`; CRM tidak memanggil `CommissionCalculator`.
 
 **Pencatatan transaksi & komisi**
 1. Transaksi masuk lewat dua jalur: **webhook** (signature + idempotency key) dan **input manual admin**. Keduanya memanggil Action yang sama (`RecordTransaction`) sehingga atribusi dan komisi konsisten.

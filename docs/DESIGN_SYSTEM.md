@@ -55,6 +55,12 @@ Implementasi: Filament dengan custom theme (Tailwind CSS 4). Token di bawah dipe
 | Payout | processing | info |
 | Payout | paid | success |
 | Payout | failed | danger |
+| Prospek CRM | new / contacted | info |
+| Prospek CRM | proposal / negotiation | warning |
+| Prospek CRM | won | success |
+| Prospek CRM | lost | danger |
+| Tindak lanjut CRM | lewat jadwal | danger |
+| Tindak lanjut CRM | selesai | success |
 
 Status selalu ditampilkan sebagai **badge dengan teks**, bukan hanya warna.
 
@@ -103,6 +109,13 @@ Gunakan komponen Filament sebelum membuat komponen kustom.
 - **Navigation:** sidebar (desktop), drawer (mobile). Item aktif memakai `--primary-soft` + teks `--primary`.
 - **Copy-to-clipboard:** untuk kode dan link referral, dengan notifikasi "Tersalin".
 - **Toast/Notification:** sukses 4 detik, error tetap sampai ditutup.
+
+### Tampilan CRM
+
+- Daftar kontak dan prospek memakai tabel Filament dengan pencarian, filter, pagination, serta kolom sekunder yang disederhanakan pada ponsel.
+- Daftar prospek menampilkan kontak, produk, pemilik (hanya panel admin), tahap, dan jadwal tindak lanjut terdekat. Status ditulis pada badge; warna hanya membantu membedakan.
+- Form tindak lanjut menampilkan tanggal/jam, jenis aktivitas, dan ringkasan. Tindak lanjut yang lewat jadwal terlihat jelas tanpa mengubah arti status transaksi atau komisi.
+- Empty state menjelaskan tindakan berikutnya, misalnya “Belum ada prospek. Tambahkan kontak untuk mulai mencatat peluang penjualan.” Gunakan pola loading dan error yang sama dengan tabel lainnya.
 
 ### Format data
 
