@@ -81,7 +81,15 @@ docker/                 # Dockerfile, nginx conf
 | Admin | `/admin` | `admin` | Semua data dan pengaturan |
 | Affiliate | `/affiliate` | `affiliate` (status `active`) | Hanya data milik sendiri |
 
-Middleware `EnsureRole` + Policy memastikan role tidak dapat saling mengakses.
+Gate panel Filament + Policy memastikan role tidak dapat saling mengakses.
+Implementasi panel memakai middleware autentikasi Filament dengan `User::canAccessPanel()`. Policy model ditemukan otomatis oleh Laravel; Resource admin Affiliate memakainya untuk akses daftar/detail dan aksi status.
+
+Registrasi publik di `/affiliate/register` memakai validasi dan rate limiting bawaan Filament. Action `RegisterAffiliate` membuat User role affiliate dan Affiliate pending dalam satu transaksi. Setelah registrasi, sesi login ditutup dan pengguna kembali ke login dengan pesan menunggu persetujuan.
+Alur bawaan Filament memancarkan event Registered/Login sebelum sesi tersebut ditutup. Listener di masa depan wajib membedakan event registrasi/login dari persetujuan affiliator; status active hanya berasal dari aksi admin.
+
+`ChangeAffiliateStatus` mengotorisasi actor, mengunci record affiliator, lalu menyimpan status dan audit log secara atomik melalui `WriteAuditLog`. Transisi: pending → active/rejected, active → suspended, suspended/rejected → active. Persetujuan/reaktivasi mengisi `approved_at`; penolakan/suspend mempertahankannya. Pengulangan status yang sama oleh admin tidak menulis ulang audit atau tanggal.
+
+Policy awal mengizinkan pembacaan data internal oleh admin dan pembacaan transaksi/komisi/payout/klik milik affiliator aktif. Operasi edit/delete umum ditolak; operasi tulis domain akan diizinkan melalui Action dan Policy tugas terkait. Query Resource affiliator tetap wajib di-scope saat dibuat pada T10.
 
 ## Data Model (ringkas)
 

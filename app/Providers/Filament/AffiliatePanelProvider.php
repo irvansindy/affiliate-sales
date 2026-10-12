@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Filament\Affiliate\Pages\Auth\Register;
+use App\Http\Middleware\SetPanelLocale;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -12,6 +14,7 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -27,9 +30,11 @@ class AffiliatePanelProvider extends PanelProvider
         return $panel
             ->id('affiliate')
             ->path('affiliate')
-            ->brandName(__('panels.affiliate.brand'))
+            ->brandName(fn (): string => __('panels.affiliate.brand'))
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
+            ->registration(Register::class)
+            ->renderHook(PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE, fn () => view('filament.affiliate.registration-pending'))
             ->colors([
                 'danger' => '#DC2626',
                 'gray' => Color::Slate,
@@ -48,6 +53,7 @@ class AffiliatePanelProvider extends PanelProvider
                 AccountWidget::class,
             ])
             ->middleware([
+                SetPanelLocale::class,
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
                 StartSession::class,

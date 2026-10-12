@@ -65,6 +65,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 ### Untuk Admin
 - Dashboard ringkasan: penjualan, komisi, top affiliator, tren per periode.
 - Manajemen affiliator: approve, reject, suspend, lihat detail.
+- Admin boleh mengaktifkan kembali affiliator yang suspended atau rejected. Reaktivasi mencatat waktu persetujuan baru; suspend mempertahankan tanggal persetujuan sebelumnya.
 - Manajemen produk (Website, Mobile Apps) dan tipe pembelian.
 - Manajemen penjualan: lihat, input manual, tandai refund/batal.
 - Manajemen komisi: review, approve, reject.

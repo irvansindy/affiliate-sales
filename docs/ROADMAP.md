@@ -20,6 +20,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] Seeder: setting default (rate 10, masa tunggu 14 hari, minimum payout 100000) dan akun admin dari `.env`
 - [x] `CommissionCalculator` dan `CreateCommissionForTransaction` beserta test
 - [x] T1: panel Filament `/admin` dan `/affiliate`, theme, serta akses berbasis role/status affiliator
+- [x] T2: registrasi affiliator pending, Resource admin, approve/reject/suspend/reaktivasi, audit log, dan Policy untuk semua model
 
 ### Perlu dipastikan lebih dulu (T0)
 - [x] `php artisan test` hijau (28 test, 53 assertion pada penyelesaian T1).
@@ -33,11 +34,15 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Terapkan theme sesuai `docs/DESIGN_SYSTEM.md` (token warna, Inter, radius).
 - Test: affiliator tidak bisa membuka `/admin`, admin tidak bisa membuka `/affiliate`, affiliator `pending`/`suspended` ditolak.
 
-### T2. Registrasi affiliator dan manajemen affiliator (admin)
+### T2. Registrasi affiliator dan manajemen affiliator (admin) — Selesai
 - Halaman registrasi publik: membuat `User` (role `affiliate`) + `Affiliate` berstatus `pending`.
 - Admin Resource Affiliate: daftar, detail, aksi approve / reject / suspend (mengisi `approved_at`), semua tercatat di `audit_logs`.
 - Buat helper/Action audit log yang dipakai ulang oleh tugas-tugas berikutnya.
 - Policy untuk semua model; Resource wajib memakai Policy.
+- Reaktivasi `suspended` dan `rejected` ke `active` diizinkan; mengisi ulang `approved_at` dan mencatat audit.
+- Registrasi di `/affiliate/register` membuat akun pending secara atomik, lalu keluar dari sesi dan kembali ke login dengan pesan menunggu persetujuan.
+- Aksi umum edit/delete dinonaktifkan. Policy data affiliator membatasi akses per pemilik aktif; akses baca data internal hanya admin. Izin tulis fitur berikutnya ditambahkan lewat Action/Policy pada tugas terkait.
+- Verifikasi: `php artisan test` lulus 62 test/244 assertion; Pint dan build produksi lulus.
 
 ### T3. Produk (admin)
 - Resource Product (code unik, nama, tipe website/mobile_app, aktif/nonaktif).
@@ -95,3 +100,4 @@ Kode komisi, payout, refund, verifikasi webhook, dan Policy. Tinjau diff-nya sen
 - Masa tunggu 14 hari, minimum payout Rp 100.000.
 - Refund setelah komisi dibayar: komisi tetap dibayarkan (default sementara).
 - Diskon untuk pengguna kode referral belum ada (rencana setelah sistem stabil).
+- Admin boleh mengaktifkan kembali affiliator suspended/rejected. Suspend mempertahankan tanggal persetujuan sebelumnya; reaktivasi mencatat waktu persetujuan baru.
