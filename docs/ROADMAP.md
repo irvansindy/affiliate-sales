@@ -21,6 +21,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] `CommissionCalculator` dan `CreateCommissionForTransaction` beserta test
 - [x] T1: panel Filament `/admin` dan `/affiliate`, theme, serta akses berbasis role/status affiliator
 - [x] T2: registrasi affiliator pending, Resource admin, approve/reject/suspend/reaktivasi, audit log, dan Policy untuk semua model
+- [x] T3: Resource admin produk dengan create/edit, pencarian, filter, status aktif/nonaktif, dan Policy admin
 
 ### Perlu dipastikan lebih dulu (T0)
 - [x] `php artisan test` hijau (28 test, 53 assertion pada penyelesaian T1).
@@ -44,8 +45,12 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Aksi umum edit/delete dinonaktifkan. Policy data affiliator membatasi akses per pemilik aktif; akses baca data internal hanya admin. Izin tulis fitur berikutnya ditambahkan lewat Action/Policy pada tugas terkait.
 - Verifikasi: `php artisan test` lulus 62 test/244 assertion; Pint dan build produksi lulus.
 
-### T3. Produk (admin)
+### T3. Produk (admin) — Selesai
 - Resource Product (code unik, nama, tipe website/mobile_app, aktif/nonaktif).
+- Halaman daftar, tambah, dan edit tersedia di `/admin/products`; produk tidak dihapus, tetapi dinonaktifkan agar referensi transaksi tetap utuh.
+- Tabel mendukung pencarian kode/nama, filter tipe/status, pagination, empty state, dan tampilan responsif bawaan Filament.
+- ProductPolicy mengizinkan admin membaca, membuat, dan mengubah produk; affiliate ditolak dan operasi delete tetap dilarang.
+- Verifikasi: `php artisan test` lulus 75 test/327 assertion; Pint dan build produksi lulus.
 
 ### T4. RecordTransaction + AttributionService + input manual admin
 - Action `RecordTransaction` (satu-satunya pintu masuk transaksi, dipakai webhook dan input manual).
