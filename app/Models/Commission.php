@@ -25,6 +25,7 @@ class Commission extends Model
             'status' => CommissionStatus::class,
             'rate' => 'decimal:2',
             'approvable_at' => 'datetime',
+            'ready_for_review_at' => 'datetime',
             'approved_at' => 'datetime',
         ];
     }

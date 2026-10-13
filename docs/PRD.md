@@ -99,7 +99,7 @@ Pelanggan klik link referral → kode tersimpan (cookie + parameter) → pelangg
 Transaksi dapat masuk lewat **webhook** dari sistem checkout atau **input manual admin** (admin memilih affiliator/kode referral).
 
 **Flow 3 — Persetujuan komisi**
-Setelah masa tunggu (mis. 14 hari, untuk antisipasi refund) → admin/sistem menyetujui → komisi `approved`.
+Setelah masa tunggu (default 14 hari, untuk antisipasi refund) → komisi siap ditinjau tetapi tetap `pending` → admin menyetujui secara manual → komisi `approved`. Admin dapat menolak komisi `pending` sebelum atau sesudah masa tunggu.
 
 **Flow 4 — Pembayaran komisi**
 Admin memilih komisi `approved` per affiliator → membuat payout → transfer manual → admin tandai `paid` + bukti → affiliator melihat riwayat.
@@ -177,6 +177,7 @@ Affiliator menyimpan kontak → membuat prospek untuk produk → mencatat intera
 | 8 | Diskon pada transaksi | Dicatat terpisah untuk pelaporan; dasar komisi tetap harga kotor |
 | 9 | Scope CRM | Kontak, prospek bertahap, catatan interaksi, dan tindak lanjut untuk affiliator; admin mengawasi seluruhnya |
 | 10 | Hubungan CRM dan komisi | Tahap prospek tidak menghasilkan transaksi atau komisi; sumber transaksi tetap webhook dan input manual admin |
+| 11 | Persetujuan komisi | Masa tunggu hanya membuat komisi siap ditinjau; perubahan ke `approved` selalu keputusan manual admin |
 
 ## Masih Terbuka
 

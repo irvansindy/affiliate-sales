@@ -25,6 +25,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T4: pencatatan transaksi bersama, atribusi referral, input manual admin, validasi nominal, dan audit log
 - [x] T5: webhook pembayaran dan refund dengan HMAC, validasi, idempotensi, antrean, rate limit, serta audit refund
 - [x] T6: link referral per produk, URL tujuan admin, pencatatan klik, cookie last-click, dan rate limit
+- [x] T7: penandaan komisi siap ditinjau, approval/reject manual admin, Resource komisi, dan audit log
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
@@ -82,9 +83,11 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Rate limiting 60 request/menit per IP pada endpoint ini.
 - Verifikasi: `php artisan test` lulus 138 test/676 assertion; `./vendor/bin/pint` lulus.
 
-### T7. Persetujuan komisi
-- Perintah terjadwal harian: komisi `pending` yang `approvable_at`-nya sudah lewat ditandai siap/`approved` (sesuai keputusan di PRD; admin tetap bisa approve/reject manual).
-- Action transisi status komisi dengan audit log; Resource Commission di panel admin.
+### T7. Persetujuan komisi — Selesai
+- Perintah terjadwal harian menandai komisi `pending` yang masa tunggunya lewat dan transaksinya masih dibayar dengan `ready_for_review_at`; status tidak berubah otomatis.
+- Admin menyetujui komisi hanya setelah `approvable_at`, atau menolak komisi `pending` kapan saja. Action memeriksa Policy dan status transaksi, mengunci record, serta menulis audit log secara atomik.
+- Resource Commission di panel admin menyediakan daftar, filter status, detail nominal, dan aksi konfirmasi Setujui/Tolak; tidak ada create/edit umum.
+- Verifikasi: `php artisan test` lulus 152 test/734 assertion; `./vendor/bin/pint` lulus.
 
 ### T8. Payout
 - Action `CreatePayout` (komisi `approved` milik satu affiliator, total ≥ minimum payout dari `settings`).

@@ -117,7 +117,7 @@ webhook_events      id, event_id (unique), event, payload (json),
 commissions         id, transaction_id (unique), affiliate_id,
                     base_amount, rate (decimal 5,2 — snapshot), amount (bigint),
                     status (pending|approved|paid|rejected|cancelled),
-                    approvable_at, approved_at, payout_id?
+                    approvable_at, ready_for_review_at?, approved_at, payout_id?
 payouts             id, affiliate_id, total_amount, status,
                     paid_at, proof_path, note
 audit_logs          id, user_id, action, subject_type, subject_id, old, new, created_at
@@ -184,7 +184,8 @@ Transisi hanya lewat Action tertentu dan selalu menulis `audit_logs`.
    - `base_amount` = harga kotor produk sebelum PPN.
    - Komisi hanya dibuat jika `sale_type = new`; perpanjangan (`renewal`) dan perubahan paket (`plan_change`) dicatat tanpa komisi.
 4. Komisi dibuat berstatus `pending` dengan `approvable_at = paid_at + approval_delay_days`.
-5. Scheduler harian menandai komisi yang melewati masa tunggu sebagai siap disetujui (otomatis atau manual oleh admin).
+5. Scheduler harian mengisi `ready_for_review_at` pada komisi `pending` yang masa tunggunya lewat dan transaksinya masih dibayar. Status tetap `pending`; pengulangan command tidak mengubah waktu penandaan.
+6. Hanya admin dapat menyetujui komisi setelah `approvable_at` atau menolak komisi `pending` kapan saja. `ChangeCommissionStatus` mengunci transaksi lalu komisi, memverifikasi status pembayaran, dan menulis perubahan beserta audit log dalam satu transaksi database. Tidak ada approval otomatis.
 
 **Pembayaran**
 1. Admin memilih komisi `approved` per affiliator (memenuhi minimum payout).
