@@ -9,6 +9,15 @@ use Illuminate\Support\Carbon;
 
 class DisplayFormatter
 {
+    public static function rupiah(?int $amount): string
+    {
+        if ($amount === null) {
+            return '—';
+        }
+
+        return 'Rp '.preg_replace('/\B(?=(\d{3})+(?!\d))/', '.', (string) $amount);
+    }
+
     public static function dateTime(CarbonInterface|string|null $value): string
     {
         if ($value === null) {

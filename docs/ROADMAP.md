@@ -22,6 +22,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T1: panel Filament `/admin` dan `/affiliate`, theme, serta akses berbasis role/status affiliator
 - [x] T2: registrasi affiliator pending, Resource admin, approve/reject/suspend/reaktivasi, audit log, dan Policy untuk semua model
 - [x] T3: Resource admin produk dengan create/edit, pencarian, filter, status aktif/nonaktif, dan Policy admin
+- [x] T4: pencatatan transaksi bersama, atribusi referral, input manual admin, validasi nominal, dan audit log
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
 ### Perlu dipastikan lebih dulu (T0)
@@ -53,13 +54,15 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - ProductPolicy mengizinkan admin membaca, membuat, dan mengubah produk; affiliate ditolak dan operasi delete tetap dilarang.
 - Verifikasi: `php artisan test` lulus 75 test/327 assertion; Pint dan build produksi lulus.
 
-### T4. RecordTransaction + AttributionService + input manual admin
+### T4. RecordTransaction + AttributionService + input manual admin — Selesai
 - Action `RecordTransaction` (satu-satunya pintu masuk transaksi, dipakai webhook dan input manual).
 - `AttributionService`: tentukan `affiliate_id` dari `referral_code`; kode tidak dikenal / affiliator non-aktif / self-referral → transaksi tetap dicatat tanpa komisi, `needs_review = true` + `review_note`.
 - Setelah transaksi tersimpan, panggil `CreateCommissionForTransaction`.
 - Form input manual di panel admin (pilih produk, affiliator/kode referral, tipe pembelian, `sale_type`, nominal).
 - Validasi: `total_paid = base_amount - discount_amount + tax_amount`.
 - Test: semua kombinasi atribusi dan `sale_type`.
+- Input manual hanya untuk admin melalui Policy; transaksi dan audit log tersimpan atomik. Kode referral tanpa pemilik aktif atau self-referral ditandai untuk tinjauan tanpa komisi.
+- Verifikasi: `php artisan test` lulus 98 test/415 assertion; Pint lulus.
 
 ### T5. Endpoint webhook
 - `POST /api/webhooks/transactions` sesuai kontrak di `docs/ARCHITECTURE.md` (*Webhook Contract*).

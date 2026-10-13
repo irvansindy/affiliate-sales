@@ -4,4 +4,12 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-class TransactionPolicy extends AffiliateOwnedPolicy {}
+use App\Models\User;
+
+class TransactionPolicy extends AffiliateOwnedPolicy
+{
+    public function create(User $user): bool
+    {
+        return $user->isAdmin();
+    }
+}
