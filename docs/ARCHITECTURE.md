@@ -99,7 +99,7 @@ users               id, name, email, password, role (admin|affiliate), ...
 affiliates          id, user_id, referral_code (unique), status, phone,
                     bank_name, bank_account_name, bank_account_number (encrypted),
                     approved_at, ...
-products            id, name, type (website|mobile_app), is_active
+products            id, code, name, type (website|mobile_app), landing_url?, is_active
 referral_clicks     id, affiliate_id, product_id?, ip_hash, user_agent, clicked_at
 transactions        id, external_ref (unique), product_id, affiliate_id?,
                     source (webhook|manual), purchase_type (subscription|one_time),
@@ -167,8 +167,8 @@ Transisi hanya lewat Action tertentu dan selalu menulis `audit_logs`.
 ## Data Flow
 
 **Atribusi**
-1. Pelanggan membuka `https://domain/r/{referral_code}`.
-2. `ReferralRedirectController` memvalidasi kode, mencatat klik, menyimpan cookie (30 hari, *last-click*), lalu redirect ke halaman produk.
+1. Pelanggan membuka `https://domain/r/{referral_code}?product=KODE_PRODUK`.
+2. `ReferralRedirectController` memvalidasi affiliator dan produk aktif serta URL tujuan produk, mencatat klik, menyimpan cookie (30 hari, *last-click*), lalu redirect ke URL tujuan produk dengan parameter `ref`.
 3. Saat pembelian, kode referral dibawa ke transaksi (parameter/metadata checkout).
 
 **CRM**
@@ -201,8 +201,8 @@ Draf kontrak antara sistem checkout (pengirim) dan AffiliateHub (penerima). Ini 
 
 ### Bagaimana kode referral sampai ke webhook
 
-1. Affiliator membagikan link `https://<domain-affiliatehub>/r/{referral_code}`.
-2. AffiliateHub mencatat klik, menyimpan cookie, lalu **redirect** ke halaman produk/checkout dengan parameter `?ref={referral_code}`.
+1. Affiliator membagikan link `https://<domain-affiliatehub>/r/{referral_code}?product=KODE_PRODUK`.
+2. AffiliateHub mencatat klik, menyimpan cookie, lalu **redirect** ke `products.landing_url` dengan parameter `ref={referral_code}` (mengganti `ref` lama bila ada). Produk tanpa URL tujuan tidak dapat dipromosikan lewat link ini.
 3. Sistem checkout menyimpan nilai `ref` bersama pesanan pelanggan.
 4. Saat pembayaran sukses, sistem checkout mengirim `referral_code` tersebut di webhook.
 

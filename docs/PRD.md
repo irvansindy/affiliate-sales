@@ -59,7 +59,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 ### Untuk Affiliator
 - Registrasi dan login (akun menunggu persetujuan admin).
 - Dashboard: total klik, total penjualan, komisi pending/approved/paid.
-- Kode referral dan link referral unik (per produk).
+- Kode referral unik per affiliator; link per produk memakai `/r/{referral_code}?product=KODE_PRODUK`. Admin mengisi URL halaman tujuan tiap produk sebelum link dapat digunakan.
 - Daftar penjualan yang teratribusi (filter tanggal, produk, tipe pembelian, status).
 - Daftar komisi dan statusnya.
 - Riwayat pembayaran komisi.

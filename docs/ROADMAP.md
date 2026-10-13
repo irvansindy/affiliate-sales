@@ -24,6 +24,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T3: Resource admin produk dengan create/edit, pencarian, filter, status aktif/nonaktif, dan Policy admin
 - [x] T4: pencatatan transaksi bersama, atribusi referral, input manual admin, validasi nominal, dan audit log
 - [x] T5: webhook pembayaran dan refund dengan HMAC, validasi, idempotensi, antrean, rate limit, serta audit refund
+- [x] T6: link referral per produk, URL tujuan admin, pencatatan klik, cookie last-click, dan rate limit
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
@@ -75,9 +76,11 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Refund sebelum transaksi pembayaran tersedia dibalas `503` agar pengirim mencoba ulang; refund sebagian mengikuti aturan refund yang sama. Komisi `pending`/`approved` dibatalkan, sedangkan `paid` tetap dibayarkan dan dicatat di audit log.
 - Verifikasi: `php artisan test` lulus 131 test/585 assertion; Pint lulus.
 
-### T6. Link referral
-- `GET /r/{referral_code}`: validasi kode, catat `referral_clicks` (IP di-hash), set cookie 30 hari (*last-click*), redirect ke halaman produk dengan `?ref=KODE`.
-- Rate limiting pada endpoint ini.
+### T6. Link referral — Selesai
+- `GET /r/{referral_code}?product=KODE_PRODUK`: validasi affiliator/produk aktif dan URL tujuan HTTP(S), catat `referral_clicks` (IP di-hash), set cookie 30 hari (*last-click*), redirect ke halaman produk dengan `ref=KODE`.
+- Admin dapat mengatur `landing_url` per produk. Produk tanpa URL tujuan belum dapat digunakan untuk link referral.
+- Rate limiting 60 request/menit per IP pada endpoint ini.
+- Verifikasi: `php artisan test` lulus 138 test/676 assertion; `./vendor/bin/pint` lulus.
 
 ### T7. Persetujuan komisi
 - Perintah terjadwal harian: komisi `pending` yang `approvable_at`-nya sudah lewat ditandai siap/`approved` (sesuai keputusan di PRD; admin tetap bisa approve/reject manual).

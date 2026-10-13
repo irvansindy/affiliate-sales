@@ -9,6 +9,8 @@ return [
     'code_help' => 'Kode unik yang digunakan sistem checkout dan webhook.',
     'name' => 'Nama produk',
     'name_help' => 'Nama yang mudah dikenali oleh admin dan affiliator.',
+    'landing_url' => 'URL halaman produk',
+    'landing_url_help' => 'Tujuan link referral. Gunakan URL lengkap http atau https; kosongkan jika produk belum siap dipromosikan.',
     'type' => 'Tipe produk',
     'type_help' => 'Pilih kategori produk yang dijual.',
     'is_active' => 'Produk aktif',

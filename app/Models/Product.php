@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected $fillable = ['code', 'name', 'type', 'is_active'];
+    protected $fillable = ['code', 'name', 'type', 'is_active', 'landing_url'];
 
     protected function casts(): array
     {

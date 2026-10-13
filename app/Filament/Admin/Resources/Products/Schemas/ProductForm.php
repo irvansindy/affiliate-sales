@@ -27,6 +27,12 @@ class ProductForm
                     ->helperText(__('products.name_help'))
                     ->required()
                     ->maxLength(150),
+                TextInput::make('landing_url')
+                    ->label(__('products.landing_url'))
+                    ->helperText(__('products.landing_url_help'))
+                    ->url()
+                    ->rule('starts_with:http://,https://')
+                    ->maxLength(2048),
                 Select::make('type')
                     ->label(__('products.type'))
                     ->helperText(__('products.type_help'))
