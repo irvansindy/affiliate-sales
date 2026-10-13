@@ -13,10 +13,10 @@ class WriteAuditLog
     /** @param array<string, mixed> $old
      * @param  array<string, mixed>  $new
      */
-    public function handle(User $actor, Model $subject, string $action, array $old, array $new): AuditLog
+    public function handle(?User $actor, Model $subject, string $action, array $old, array $new): AuditLog
     {
         return AuditLog::create([
-            'user_id' => $actor->getKey(),
+            'user_id' => $actor?->getKey(),
             'action' => $action,
             'subject_type' => $subject->getMorphClass(),
             'subject_id' => $subject->getKey(),

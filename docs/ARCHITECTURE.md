@@ -279,11 +279,15 @@ Jika checkout berada di domain yang sama, `ref` dapat dibaca dari cookie; prinsi
 
 - Verifikasi signature dan timestamp sebelum memproses apa pun. Gagal → `401`.
 - Payload tidak valid (field wajib hilang, `total_paid` tidak sama dengan `base_amount - discount_amount + tax_amount`, produk tidak dikenal) → `422`, tidak disimpan.
+- Nilai uang dan siklus subscription pada JSON wajib bertipe integer, bukan string numerik. Header `Content-Type` wajib JSON.
 - `event_id` atau `external_ref` yang sudah pernah diproses → balas `200` tanpa efek (duplikat aman).
+- Jika `event_id` yang sama masih `received` atau `failed`, retry pengirim tetap mendapat `200` tetapi job dijadwalkan ulang; pemrosesan job idempoten sehingga penjualan/komisi/refund tidak digandakan.
 - Berhasil diterima → `202`. Payload disimpan dulu, lalu diproses oleh job (atribusi dan komisi).
+- Refund yang tiba sebelum transaksi pembayaran tersedia → `503` tanpa menyimpan event, agar pengirim mencoba ulang. Setiap refund, termasuk sebagian, membatalkan komisi `pending`/`approved`; komisi `paid` tetap dibayarkan tanpa clawback. Refund berikutnya untuk transaksi yang sudah `refunded` dianggap duplikat.
 - `referral_code` tidak ditemukan atau affiliator non-aktif → transaksi tetap dicatat tanpa affiliator dan ditandai untuk ditinjau admin; tidak ada komisi.
 - Self-referral (email pelanggan sama dengan email affiliator) → transaksi dicatat, komisi tidak dibuat, ditandai untuk ditinjau.
 - Pengirim sebaiknya retry dengan exponential backoff jika menerima `5xx` atau timeout.
+- Setiap percobaan ulang harus memakai `X-Timestamp` baru dan menghitung ulang `X-Signature`; signature lama akan ditolak setelah lewat 5 menit.
 - Input manual admin memakai field yang sama (formulir di panel admin) dan melewati Action `RecordTransaction` yang sama.
 
 ## Database & Storage

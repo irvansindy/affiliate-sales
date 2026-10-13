@@ -51,6 +51,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - **Diskon** dicatat terpisah (`discount_amount`) untuk pelaporan; tidak memengaruhi dasar komisi.
 - Komisi dibuat dengan status `pending` → `approved` → `paid`; dapat `rejected`/`cancelled` jika transaksi di-refund **sebelum** komisi dibayar atau tidak valid.
 - **Refund setelah komisi dibayar (default sementara):** komisi yang sudah `paid` tetap dibayarkan, tanpa pemotongan/clawback. Transaksi ditandai `refunded` dan kejadian dicatat di audit log. Kebijakan ini belum final dan dapat berubah.
+- Refund sebagian mengikuti aturan status komisi yang sama dengan refund penuh: komisi `pending`/`approved` dibatalkan, sedangkan komisi `paid` tidak ditarik kembali. Nominal refund dicatat pada transaksi.
 - Masa tunggu approval **14 hari** dan minimum payout **Rp 100.000**.
 
 ## Core Features (Versi 1)

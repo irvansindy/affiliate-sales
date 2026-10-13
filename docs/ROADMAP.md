@@ -23,6 +23,8 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T2: registrasi affiliator pending, Resource admin, approve/reject/suspend/reaktivasi, audit log, dan Policy untuk semua model
 - [x] T3: Resource admin produk dengan create/edit, pencarian, filter, status aktif/nonaktif, dan Policy admin
 - [x] T4: pencatatan transaksi bersama, atribusi referral, input manual admin, validasi nominal, dan audit log
+- [x] T5: webhook pembayaran dan refund dengan HMAC, validasi, idempotensi, antrean, rate limit, serta audit refund
+- [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
 ### Perlu dipastikan lebih dulu (T0)
@@ -64,12 +66,14 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Input manual hanya untuk admin melalui Policy; transaksi dan audit log tersimpan atomik. Kode referral tanpa pemilik aktif atau self-referral ditandai untuk tinjauan tanpa komisi.
 - Verifikasi: `php artisan test` lulus 98 test/415 assertion; Pint lulus.
 
-### T5. Endpoint webhook
+### T5. Endpoint webhook — Selesai
 - `POST /api/webhooks/transactions` sesuai kontrak di `docs/ARCHITECTURE.md` (*Webhook Contract*).
 - Verifikasi signature HMAC + timestamp (toleransi 5 menit), idempotensi via `webhook_events.event_id`, simpan payload dulu lalu proses lewat job.
-- Event `payment.succeeded` → `RecordTransaction`; `payment.refunded` → `HandleRefund` (T9).
+- Event `payment.succeeded` → `RecordTransaction`; `payment.refunded` → `HandleRefund` (dimajukan dari T9).
 - Balasan: 401 signature salah, 422 payload tidak valid, 200 duplikat, 202 diterima.
 - Test: signature salah, timestamp kedaluwarsa, duplikat, payload tidak valid, alur sukses.
+- Refund sebelum transaksi pembayaran tersedia dibalas `503` agar pengirim mencoba ulang; refund sebagian mengikuti aturan refund yang sama. Komisi `pending`/`approved` dibatalkan, sedangkan `paid` tetap dibayarkan dan dicatat di audit log.
+- Verifikasi: `php artisan test` lulus 131 test/585 assertion; Pint lulus.
 
 ### T6. Link referral
 - `GET /r/{referral_code}`: validasi kode, catat `referral_clicks` (IP di-hash), set cookie 30 hari (*last-click*), redirect ke halaman produk dengan `?ref=KODE`.
@@ -84,7 +88,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Aksi admin "tandai paid" + unggah bukti transfer (disk privat, signed URL); komisi terkait menjadi `paid`.
 - Notifikasi email ke affiliator.
 
-### T9. Refund
+### T9. Refund — Selesai lebih awal pada T5
 - Action `HandleRefund`: refund sebelum komisi `paid` → komisi `cancelled`; refund setelah `paid` → komisi tetap dibayarkan (tanpa clawback), dicatat di audit log.
 
 ### T10. Panel affiliator
