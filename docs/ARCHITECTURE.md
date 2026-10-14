@@ -119,6 +119,7 @@ commissions         id, transaction_id (unique), affiliate_id,
                     status (pending|approved|paid|rejected|cancelled),
                     approvable_at, ready_for_review_at?, approved_at, payout_id?
 payouts             id, affiliate_id, total_amount, status,
+                    bank_name, bank_account_name, bank_account_number (snapshot terenkripsi),
                     paid_at, proof_path, note
 audit_logs          id, user_id, action, subject_type, subject_id, old, new, created_at
 settings            key, value  (default_commission_rate=10, approval_delay_days=14,
@@ -188,10 +189,11 @@ Transisi hanya lewat Action tertentu dan selalu menulis `audit_logs`.
 6. Hanya admin dapat menyetujui komisi setelah `approvable_at` atau menolak komisi `pending` kapan saja. `ChangeCommissionStatus` mengunci transaksi lalu komisi, memverifikasi status pembayaran, dan menulis perubahan beserta audit log dalam satu transaksi database. Tidak ada approval otomatis.
 
 **Pembayaran**
-1. Admin memilih komisi `approved` per affiliator (memenuhi minimum payout).
-2. `CreatePayout` membuat payout dan mengaitkan komisi.
-3. Setelah transfer, admin menandai `paid` + unggah bukti; komisi menjadi `paid`.
-4. Notifikasi email ke affiliator.
+1. Admin memilih komisi `approved` yang belum terikat payout, milik satu affiliator, dan totalnya memenuhi `settings.min_payout`. Data rekening harus lengkap.
+2. `CreatePayout` mengunci komisi dalam transaksi database, membuat payout `processing`, menyalin snapshot rekening terenkripsi, dan mengisi `commissions.payout_id`. Status komisi tetap `approved`.
+3. Setelah transfer berhasil, bukti disimpan pada disk privat. `MarkPayoutPaid` mengunci payout/komisi, memvalidasi ulang seluruh komisi dan total, lalu mengubah keduanya menjadi `paid` secara atomik. Bukti ditampilkan lewat signed URL sementara.
+4. Jika transfer gagal, `FailPayout` mengubah payout menjadi `failed` dan melepas `payout_id` komisi; komisi yang masih `approved` dapat dimasukkan ke payout baru. Komisi yang batal akibat refund tetap `cancelled`. Riwayat keanggotaan batch gagal ada di audit log.
+5. Seluruh aksi dan perubahan status ditulis ke audit log dalam transaksi. Email hasil akhir diantrekan setelah perubahan database selesai. Payout `paid` dan `failed` terminal.
 
 **Refund**
 Transaksi `refunded` → komisi `pending/approved` menjadi `cancelled`. Jika komisi sudah `paid`, komisi **tetap dibayarkan** (tanpa clawback) dan kejadian dicatat di audit log. Logika ini diisolasi di satu Action (`HandleRefund`) agar mudah diubah jika kebijakan berganti.

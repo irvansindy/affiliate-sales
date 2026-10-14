@@ -75,7 +75,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Manajemen produk (Website, Mobile Apps) dan tipe pembelian.
 - Manajemen penjualan: lihat, input manual, tandai refund/batal.
 - Manajemen komisi: review, approve, reject.
-- Manajemen pembayaran (payout): buat batch pembayaran, tandai `paid`, unggah bukti transfer.
+- Manajemen pembayaran (payout): buat batch pembayaran dari komisi `approved`, tandai `paid` dengan bukti transfer, atau tandai `failed` saat transfer gagal.
 - Pengaturan: rate komisi default, masa tunggu approval, minimum payout.
 - Ekspor laporan (CSV/Excel).
 - Audit log aktivitas penting.
@@ -102,7 +102,7 @@ Transaksi dapat masuk lewat **webhook** dari sistem checkout atau **input manual
 Setelah masa tunggu (default 14 hari, untuk antisipasi refund) → komisi siap ditinjau tetapi tetap `pending` → admin menyetujui secara manual → komisi `approved`. Admin dapat menolak komisi `pending` sebelum atau sesudah masa tunggu.
 
 **Flow 4 — Pembayaran komisi**
-Admin memilih komisi `approved` per affiliator → membuat payout → transfer manual → admin tandai `paid` + bukti → affiliator melihat riwayat.
+Admin memilih komisi `approved` yang belum terikat payout dan data rekening affiliator harus lengkap → membuat payout dengan snapshot rekening terenkripsi → transfer manual. Komisi tetap `approved` selama payout `processing`. Jika berhasil, admin mengunggah bukti lalu menandai `paid` dan komisi terkait menjadi `paid`. Jika gagal, admin menandai `failed`; komisi yang belum dibatalkan dilepas dalam status `approved` agar bisa dibuatkan payout baru. Payout `paid` tidak dapat diproses ulang. Hasil akhir diberitahukan melalui email.
 
 **Flow 5 — Subscription**
 Pembayaran pertama subscription tercatat sebagai penjualan awal → komisi 10% dibuat. Pembayaran perpanjangan tetap dicatat sebagai transaksi (untuk pelaporan) tetapi **tidak** menghasilkan komisi. Perubahan paket (upgrade/downgrade) juga dicatat tanpa komisi.

@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'label' => 'Payout',
+    'plural_label' => 'Payout',
+    'number' => 'Nomor',
+    'affiliate' => 'Affiliator',
+    'commissions' => 'Komisi',
+    'total' => 'Total',
+    'status' => 'Status',
+    'created_at' => 'Dibuat',
+    'paid_at' => 'Dibayar',
+    'bank' => 'Bank',
+    'account_name' => 'Nama pemilik rekening',
+    'account_number' => 'Nomor rekening',
+    'proof' => 'Bukti transfer',
+    'view_proof' => 'Lihat bukti (tautan berlaku 10 menit)',
+    'view' => 'Lihat',
+    'mark_paid' => 'Tandai dibayar',
+    'mark_failed' => 'Tandai gagal',
+    'confirm_paid' => 'Konfirmasi transfer sebesar :amount setelah mengunggah bukti. Komisi akan menjadi dibayar.',
+    'confirm_failed' => 'Transfer :amount gagal. Komisi yang masih layak akan dilepas untuk payout baru.',
+    'paid_success' => 'Payout ditandai dibayar.',
+    'failed_success' => 'Payout ditandai gagal.',
+    'empty_heading' => 'Belum ada payout',
+    'statuses' => ['processing' => 'Diproses', 'paid' => 'Dibayar', 'failed' => 'Gagal'],
+    'bank_required' => 'Data bank, nama pemilik, dan nomor rekening harus lengkap sebelum payout dibuat.',
+    'invalid_commissions' => 'Pilih komisi approved yang belum terikat payout dan milik affiliator yang sama.',
+    'below_minimum' => 'Total komisi belum mencapai minimum payout Rp :amount.',
+    'invalid_transition' => 'Payout ini tidak dapat diproses karena status atau komisinya telah berubah.',
+    'proof_failed' => 'Bukti transfer gagal disimpan.',
+    'mail_paid_subject' => 'Payout Anda telah dibayar',
+    'mail_failed_subject' => 'Payout Anda gagal diproses',
+    'mail_paid_body' => 'Payout sebesar Rp :amount telah dibayar. Rincian tersedia di akun Anda.',
+    'mail_failed_body' => 'Payout belum berhasil ditransfer. Komisi yang masih memenuhi syarat akan diproses kembali dalam payout berikutnya.',
+];

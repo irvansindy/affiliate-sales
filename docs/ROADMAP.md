@@ -26,6 +26,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T5: webhook pembayaran dan refund dengan HMAC, validasi, idempotensi, antrean, rate limit, serta audit refund
 - [x] T6: link referral per produk, URL tujuan admin, pencatatan klik, cookie last-click, dan rate limit
 - [x] T7: penandaan komisi siap ditinjau, approval/reject manual admin, Resource komisi, dan audit log
+- [x] T8: payout manual dengan snapshot rekening, bukti privat, kegagalan transfer, audit log, dan notifikasi email
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
@@ -89,10 +90,13 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Resource Commission di panel admin menyediakan daftar, filter status, detail nominal, dan aksi konfirmasi Setujui/Tolak; tidak ada create/edit umum.
 - Verifikasi: `php artisan test` lulus 152 test/734 assertion; `./vendor/bin/pint` lulus.
 
-### T8. Payout
+### T8. Payout — Selesai
 - Action `CreatePayout` (komisi `approved` milik satu affiliator, total ≥ minimum payout dari `settings`).
 - Aksi admin "tandai paid" + unggah bukti transfer (disk privat, signed URL); komisi terkait menjadi `paid`.
 - Notifikasi email ke affiliator.
+- Rekening harus lengkap sebelum payout dibuat; snapshot rekening terenkripsi disimpan per payout. Komisi tetap `approved` selama `processing` dan tidak dapat terikat pada payout aktif lain.
+- Transfer gagal dapat ditandai `failed`, melepas komisi yang masih layak untuk payout baru. `paid` terminal; semua transisi atomik dan diaudit.
+- Verifikasi: `php artisan test` lulus 161 test/775 assertion; `./vendor/bin/pint` lulus.
 
 ### T9. Refund — Selesai lebih awal pada T5
 - Action `HandleRefund`: refund sebelum komisi `paid` → komisi `cancelled`; refund setelah `paid` → komisi tetap dibayarkan (tanpa clawback), dicatat di audit log.

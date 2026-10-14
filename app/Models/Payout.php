@@ -14,14 +14,21 @@ class Payout extends Model
 {
     use SoftDeletes;
 
+    protected $attributes = ['status' => 'processing'];
+
     // 'status' tidak fillable: hanya lewat Action (audit log).
-    protected $fillable = ['affiliate_id', 'total_amount', 'paid_at', 'proof_path', 'note'];
+    protected $fillable = ['affiliate_id', 'total_amount', 'bank_name', 'bank_account_name', 'bank_account_number', 'note'];
+
+    protected $hidden = ['bank_name', 'bank_account_name', 'bank_account_number', 'proof_path'];
 
     protected function casts(): array
     {
         return [
             'status' => PayoutStatus::class,
             'paid_at' => 'datetime',
+            'bank_name' => 'encrypted',
+            'bank_account_name' => 'encrypted',
+            'bank_account_number' => 'encrypted',
         ];
     }
 
