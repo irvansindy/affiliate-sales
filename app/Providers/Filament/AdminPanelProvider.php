@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName(fn (): string => __('panels.admin.brand'))
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
+            ->databaseNotifications()
             ->colors([
                 'danger' => '#DC2626',
                 'gray' => Color::Slate,

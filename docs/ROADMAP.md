@@ -109,9 +109,12 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Profil dapat mengubah nama, telepon, dan rekening sendiri; nomor rekening tidak diisi kembali ke form dan hanya tampil termask. Perubahan diaudit tanpa menyimpan nomor penuh.
 - Verifikasi: `php artisan test` lulus 170 test/820 assertion; `./vendor/bin/pint` dan `npm run build` lulus.
 
-### T11. Dashboard admin dan laporan
+### T11. Dashboard admin dan laporan — Selesai
 - Widget ringkasan (penjualan, komisi, top affiliator, tren).
 - Ekspor CSV/Excel lewat queue.
+- Ringkasan memakai transaksi `paid` saja; lima affiliator teratas berdasarkan total pembayaran, tren enam bulan termasuk bulan kosong, dan komisi `approved`/`paid` terpisah.
+- Ekspor detail transaksi dan komisi memakai queue Filament, disk privat, notifikasi database, serta proteksi formula spreadsheet.
+- Verifikasi: `php artisan test` lulus 176 test/845 assertion; `./vendor/bin/pint` dan `npm run build` lulus.
 
 ### T12. CRM: kontak dan fondasi prospek
 - Tambahkan migrasi/model/factory untuk kontak, prospek, dan aktivitas CRM tanpa mengubah migrasi lama atau kontrak webhook.

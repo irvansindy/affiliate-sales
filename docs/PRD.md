@@ -69,7 +69,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Daftar tindak lanjut terjadwal dan penanda selesai.
 
 ### Untuk Admin
-- Dashboard ringkasan: penjualan, komisi, top affiliator, tren per periode.
+- Dashboard ringkasan: jumlah dan nilai transaksi berstatus `paid` (refund tidak dihitung), nilai komisi `approved` dan `paid`, lima affiliator teratas berdasarkan total nilai transaksi `paid`, serta tren penjualan enam bulan kalender terakhir.
 - Manajemen affiliator: approve, reject, suspend, lihat detail.
 - Admin boleh mengaktifkan kembali affiliator yang suspended atau rejected. Reaktivasi mencatat waktu persetujuan baru; suspend mempertahankan tanggal persetujuan sebelumnya.
 - Manajemen produk (Website, Mobile Apps) dan tipe pembelian.
@@ -77,7 +77,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Manajemen komisi: review, approve, reject.
 - Manajemen pembayaran (payout): buat batch pembayaran dari komisi `approved`, tandai `paid` dengan bukti transfer, atau tandai `failed` saat transfer gagal.
 - Pengaturan: rate komisi default, masa tunggu approval, minimum payout.
-- Ekspor laporan (CSV/Excel).
+- Ekspor detail transaksi dan komisi (CSV/Excel) melalui queue; hasil unduhan hanya dapat diakses admin pemilik ekspor.
 - Audit log aktivitas penting.
 - Tampilan seluruh kontak, prospek, tahapan penjualan, dan tindak lanjut affiliator.
 

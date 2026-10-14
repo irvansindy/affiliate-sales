@@ -31,7 +31,7 @@ Affiliator ──┘    (/admin, /affiliate)      │  CRM · Actions · Service
 | Cache & Queue | **Redis** | Queue komisi/laporan, cache dashboard, rate limiting |
 | Auth | Autentikasi bawaan Laravel/Filament + kolom `role` | Hanya dua role, tidak perlu package permission |
 | API (siap pakai) | **Laravel Sanctum** | Untuk webhook internal/mobile app affiliator di masa depan |
-| Ekspor | `filament/actions` export atau Laravel Excel | CSV/Excel laporan |
+| Ekspor | `filament/actions` export | CSV/Excel detail transaksi dan komisi via queue, tanpa dependency tambahan |
 | Email | SMTP / layanan transaksional (Resend, Mailgun, dsb.) | Notifikasi persetujuan, komisi, payout |
 | Error monitoring | Sentry (opsional) | Pelacakan error produksi |
 | Testing | Pest/PHPUnit | Wajib untuk logika komisi |
@@ -322,6 +322,8 @@ Jika checkout berada di domain yang sama, `ref` dapat dibaca dari cookie; prinsi
 
 - Dashboard memakai agregasi dengan index + cache singkat (1–5 menit).
 - Laporan/ekspor besar diproses lewat queue.
+- Dashboard admin menghitung transaksi `paid` saja (refund dikecualikan), lima affiliator teratas berdasarkan `SUM(total_paid)`, dan tren enam bulan termasuk bulan tanpa penjualan. Komisi `approved` dan `paid` dilaporkan terpisah.
+- Ekspor Filament menyimpan berkas pada disk `local` privat dan mengirim notifikasi database kepada admin pemilik ekspor. Worker queue wajib aktif agar berkas selesai dan tautan unduh tersedia.
 - Webhook diproses asinkron (simpan dulu, proses di job) agar respons cepat dan aman terhadap retry.
 - Monitoring: failed jobs, antrian, error rate, dan alert untuk selisih komisi.
 - Rate limiting pada login, registrasi, redirect referral, dan webhook.
