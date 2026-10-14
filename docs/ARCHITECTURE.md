@@ -90,7 +90,7 @@ Alur bawaan Filament memancarkan event Registered/Login sebelum sesi tersebut di
 
 `ChangeAffiliateStatus` mengotorisasi actor, mengunci record affiliator, lalu menyimpan status dan audit log secara atomik melalui `WriteAuditLog`. Transisi: pending → active/rejected, active → suspended, suspended/rejected → active. Persetujuan/reaktivasi mengisi `approved_at`; penolakan/suspend mempertahankannya. Pengulangan status yang sama oleh admin tidak menulis ulang audit atau tanggal.
 
-Policy awal mengizinkan pembacaan data internal oleh admin dan pembacaan transaksi/komisi/payout/klik milik affiliator aktif. Operasi edit/delete umum ditolak; operasi tulis domain akan diizinkan melalui Action dan Policy tugas terkait. Query Resource affiliator tetap wajib di-scope saat dibuat pada T10.
+Policy mengizinkan pembacaan data internal oleh admin dan pembacaan transaksi/komisi/payout/klik milik affiliator aktif. Operasi edit/delete umum ditolak. Resource transaksi, komisi, dan payout pada panel affiliator memakai query `affiliate_id` dari sesi pengguna; detail record milik orang lain tidak ditemukan. Profil rekening hanya diubah melalui `UpdateAffiliateProfile` dengan Policy pemilik aktif, validasi server, dan audit log yang tidak menyimpan nomor rekening penuh.
 
 ## Data Model (ringkas)
 

@@ -28,6 +28,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T7: penandaan komisi siap ditinjau, approval/reject manual admin, Resource komisi, dan audit log
 - [x] T8: payout manual dengan snapshot rekening, bukti privat, kegagalan transfer, audit log, dan notifikasi email
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
+- [x] T10: dashboard affiliator, daftar penjualan/komisi/payout milik sendiri, profil dan rekening termask
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
 ### Perlu dipastikan lebih dulu (T0)
@@ -101,9 +102,12 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 ### T9. Refund — Selesai lebih awal pada T5
 - Action `HandleRefund`: refund sebelum komisi `paid` → komisi `cancelled`; refund setelah `paid` → komisi tetap dibayarkan (tanpa clawback), dicatat di audit log.
 
-### T10. Panel affiliator
+### T10. Panel affiliator — Selesai
 - Dashboard (klik, penjualan, komisi pending/approved/paid), daftar penjualan, daftar komisi, riwayat payout, profil + data rekening.
 - Semua query ter-scope ke affiliator yang login. Test: affiliator A tidak bisa melihat data affiliator B.
+- Dashboard memakai agregasi ter-scope; Resource baca-saja untuk transaksi, komisi, payout. Daftar transaksi mendukung filter tanggal, produk, tipe pembelian, dan status.
+- Profil dapat mengubah nama, telepon, dan rekening sendiri; nomor rekening tidak diisi kembali ke form dan hanya tampil termask. Perubahan diaudit tanpa menyimpan nomor penuh.
+- Verifikasi: `php artisan test` lulus 170 test/820 assertion; `./vendor/bin/pint` dan `npm run build` lulus.
 
 ### T11. Dashboard admin dan laporan
 - Widget ringkasan (penjualan, komisi, top affiliator, tren).

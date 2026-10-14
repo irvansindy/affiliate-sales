@@ -31,4 +31,11 @@ class AffiliatePolicy extends ReadOnlyPolicy
     {
         return $user->isAdmin();
     }
+
+    public function updateProfile(User $user, Model $record): bool
+    {
+        return $user->isAffiliate() &&
+            $record->getAttribute('user_id') === $user->getKey() &&
+            $record->getAttribute('status') === AffiliateStatus::Active;
+    }
 }
