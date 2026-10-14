@@ -168,9 +168,10 @@ Transisi hanya lewat Action tertentu dan selalu menulis `audit_logs`.
 ## Data Flow
 
 **Atribusi**
-1. Pelanggan membuka `https://domain/r/{referral_code}?product=KODE_PRODUK`.
-2. `ReferralRedirectController` memvalidasi affiliator dan produk aktif serta URL tujuan produk, mencatat klik, menyimpan cookie (30 hari, *last-click*), lalu redirect ke URL tujuan produk dengan parameter `ref`.
-3. Saat pembelian, kode referral dibawa ke transaksi (parameter/metadata checkout).
+1. Panel affiliator menampilkan produk aktif dan membentuk link per produk untuk affiliator yang login; detail affiliator admin membentuk link untuk record yang sedang dilihat. Keduanya memakai named route `referral.redirect` tanpa menyimpan URL turunan. Link hanya dapat disalin bila affiliator aktif dan produk memiliki URL tujuan HTTP(S) yang valid.
+2. Pelanggan membuka `https://domain/r/{referral_code}?product=KODE_PRODUK`.
+3. `ReferralRedirectController` memvalidasi affiliator dan produk aktif serta URL tujuan produk, mencatat klik, menyimpan cookie (30 hari, *last-click*), lalu redirect ke URL tujuan produk dengan parameter `ref`.
+4. Saat pembelian, kode referral dibawa ke transaksi (parameter/metadata checkout).
 
 **CRM**
 1. Affiliator aktif mencatat kontak miliknya, membuat prospek untuk produk yang dipilih, lalu memperbarui tahap dan mencatat aktivitas atau jadwal tindak lanjut.

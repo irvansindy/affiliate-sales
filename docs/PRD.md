@@ -59,7 +59,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 ### Untuk Affiliator
 - Registrasi dan login (akun menunggu persetujuan admin).
 - Dashboard: total klik, total penjualan, komisi pending/approved/paid.
-- Kode referral unik per affiliator; link per produk memakai `/r/{referral_code}?product=KODE_PRODUK`. Admin mengisi URL halaman tujuan tiap produk sebelum link dapat digunakan.
+- Kode referral unik per affiliator; panel affiliator menampilkan link siap salin per produk aktif memakai `/r/{referral_code}?product=KODE_PRODUK`. Produk tanpa URL tujuan ditandai belum siap, tanpa link yang dapat disalin. Admin mengisi URL halaman tujuan tiap produk sebelum link dapat digunakan.
 - Daftar penjualan yang teratribusi (filter tanggal, produk, tipe pembelian, status).
 - Daftar komisi dan statusnya.
 - Riwayat pembayaran komisi.
@@ -71,6 +71,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 ### Untuk Admin
 - Dashboard ringkasan: jumlah dan nilai transaksi berstatus `paid` (refund tidak dihitung), nilai komisi `approved` dan `paid`, lima affiliator teratas berdasarkan total nilai transaksi `paid`, serta tren penjualan enam bulan kalender terakhir.
 - Manajemen affiliator: approve, reject, suspend, lihat detail.
+- Detail affiliator menampilkan link referral per produk aktif untuk affiliator yang dipilih; link affiliator nonaktif tidak dapat dibagikan.
 - Admin boleh mengaktifkan kembali affiliator yang suspended atau rejected. Reaktivasi mencatat waktu persetujuan baru; suspend mempertahankan tanggal persetujuan sebelumnya.
 - Manajemen produk (Website, Mobile Apps) dan tipe pembelian.
 - Manajemen penjualan: lihat, input manual, tandai refund/batal.

@@ -29,6 +29,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T8: payout manual dengan snapshot rekening, bukti privat, kegagalan transfer, audit log, dan notifikasi email
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] T10: dashboard affiliator, daftar penjualan/komisi/payout milik sendiri, profil dan rekening termask
+- [x] T11A: katalog link referral siap salin di panel affiliator dan detail affiliator admin
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
 ### Perlu dipastikan lebih dulu (T0)
@@ -115,6 +116,13 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Ringkasan memakai transaksi `paid` saja; lima affiliator teratas berdasarkan total pembayaran, tren enam bulan termasuk bulan kosong, dan komisi `approved`/`paid` terpisah.
 - Ekspor detail transaksi dan komisi memakai queue Filament, disk privat, notifikasi database, serta proteksi formula spreadsheet.
 - Verifikasi: `php artisan test` lulus 176 test/845 assertion; `./vendor/bin/pint` dan `npm run build` lulus.
+
+### T11A. Link referral siap pakai — Selesai
+- Affiliator melihat produk aktif dan link referral miliknya; produk tanpa URL tujuan ditandai belum siap, produk nonaktif tidak ditawarkan.
+- Admin melihat link per produk pada detail affiliator yang dipilih. Affiliator nonaktif tidak memiliki link siap dibagikan.
+- Link dibentuk lewat named route tanpa kolom baru; otorisasi Policy dan pembatasan data diverifikasi di server. Alur transaksi tetap webhook atau input manual admin.
+- Test mencakup link valid, produk tidak siap/nonaktif, pemisahan affiliator, dan status suspended.
+- Verifikasi: `php artisan test` lulus 183 test/872 assertion; `./vendor/bin/pint` dan `npm run build` lulus.
 
 ### T12. CRM: kontak dan fondasi prospek
 - Tambahkan migrasi/model/factory untuk kontak, prospek, dan aktivitas CRM tanpa mengubah migrasi lama atau kontrak webhook.
