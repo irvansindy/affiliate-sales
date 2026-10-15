@@ -112,6 +112,10 @@ transactions        id, external_ref (unique), product_id, affiliate_id?,
                     status (paid|refunded|cancelled), paid_at,
                     refund_amount?, refunded_at?,
                     needs_review (bool), review_note?, ...
+sales_submissions   id, affiliate_id, product_id, transaction_id? (unique),
+                    purchase_type, customer_name, customer_email, claimed_ref?,
+                    proof_path, status (pending|approved|rejected), rejection_reason?,
+                    reviewed_by?, reviewed_at?, timestamps
 webhook_events      id, event_id (unique), event, payload (json),
                     status (received|processed|failed), processed_at?, error?
 commissions         id, transaction_id (unique), affiliate_id,
@@ -179,6 +183,7 @@ Transisi hanya lewat Action tertentu dan selalu menulis `audit_logs`.
 3. Tahap `won` hanya menandai hasil prospek. Pembayaran tetap dicatat melalui `RecordTransaction`; CRM tidak memanggil `CommissionCalculator`.
 
 **Pencatatan transaksi & komisi**
+0. Affiliator aktif dapat mengajukan penjualan awal lewat `SubmitSalesSubmission` dengan bukti PDF/JPG/PNG maksimum 5 MB pada disk privat dalam folder per affiliator. Klaim hanya menyimpan produk, tipe pembelian, pelanggan, dan referensi yang diklaim; tidak ada angka uang atau komisi. Admin meninjau bukti lewat URL sementara. `ReviewSalesSubmission` mengunci klaim dalam transaksi database: penolakan mensyaratkan alasan; approval mensyaratkan referensi final unik dan nominal terverifikasi, lalu memanggil `RecordTransaction` dengan `source=manual` dan `sale_type=new`. Klaim, transaksi, komisi, dan audit log commit atomik. Klaim tidak membuat transaksi/komisi sebelum approval. Perubahan rate global oleh admin dicatat di audit log; komisi baru membaca rate saat dibuat dan komisi lama tidak dihitung ulang.
 1. Transaksi masuk lewat dua jalur: **webhook** (signature + idempotency key) dan **input manual admin**. Keduanya memanggil Action yang sama (`RecordTransaction`) sehingga atribusi dan komisi konsisten.
 2. `AttributionService` menentukan `affiliate_id` (tolak self-referral dan affiliator non-aktif).
 3. Job `CreateCommissionForTransaction` memanggil `CommissionCalculator`:

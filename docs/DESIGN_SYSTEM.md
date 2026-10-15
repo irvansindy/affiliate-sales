@@ -110,6 +110,12 @@ Gunakan komponen Filament sebelum membuat komponen kustom.
 - **Copy-to-clipboard:** untuk kode dan link referral, dengan notifikasi "Tersalin".
 - **Toast/Notification:** sukses 4 detik, error tetap sampai ditutup.
 
+### Pengajuan penjualan
+
+- Panel affiliator menyediakan daftar dan formulir pengajuan; produk aktif, tipe pembelian, pelanggan, referensi opsional, dan unggahan bukti wajib. Nominal tidak ditampilkan sebagai input affiliator.
+- Panel admin menampilkan detail klaim dan tautan bukti privat sementara. Persetujuan memakai modal dengan referensi final, dasar harga sebelum PPN, diskon, PPN, total bayar, dan waktu pembayaran; penolakan meminta alasan. Status pending/disetujui/ditolak tetap terbaca tanpa bergantung pada warna.
+- Pengaturan rate global menampilkan keterangan bahwa perubahan hanya berlaku bagi komisi baru.
+
 ### Tampilan CRM
 
 - Daftar kontak dan prospek memakai tabel Filament dengan pencarian, filter, pagination, serta kolom sekunder yang disederhanakan pada ponsel.

@@ -30,6 +30,7 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] T10: dashboard affiliator, daftar penjualan/komisi/payout milik sendiri, profil dan rekening termask
 - [x] T11A: katalog link referral siap salin di panel affiliator dan detail affiliator admin
+- [x] T11B: pengajuan penjualan manual affiliator, bukti wajib privat, verifikasi admin, transaksi/komisi atomik, dan pengaturan rate global admin
 - [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
 
 ### Perlu dipastikan lebih dulu (T0)
@@ -123,6 +124,12 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Link dibentuk lewat named route tanpa kolom baru; otorisasi Policy dan pembatasan data diverifikasi di server. Alur transaksi tetap webhook atau input manual admin.
 - Test mencakup link valid, produk tidak siap/nonaktif, pemisahan affiliator, dan status suspended.
 - Verifikasi: `php artisan test` lulus 183 test/872 assertion; `./vendor/bin/pint` dan `npm run build` lulus.
+
+### T11B. Pengajuan penjualan affiliator — Selesai
+- Affiliator aktif mengajukan penjualan awal subscription atau beli lepas melalui panelnya: produk, tipe pembelian, pelanggan, referensi pembayaran opsional, dan bukti PDF/JPG/PNG wajib di disk privat per affiliator. Tidak ada input nominal atau komisi.
+- Admin meninjau klaim dan bukti melalui tautan sementara, menolak dengan alasan atau menyetujui dengan referensi akhir unik, rincian pembayaran, waktu bayar, dan paket subscription bila perlu. Approval memakai `RecordTransaction` dalam satu transaksi database; pengajuan belum menghasilkan transaksi/komisi sebelum disetujui. Referensi final unik juga menjaga deduplikasi dengan webhook mendatang.
+- Rate komisi global dapat diubah admin untuk transaksi baru; rate komisi lama tetap snapshot. Seluruh keputusan admin dan perubahan rate diaudit, akses panel serta data dibatasi oleh Policy.
+- Verifikasi: `php artisan test` lulus 194 test/944 assertion; `./vendor/bin/pint` lulus.
 
 ### T12. CRM: kontak dan fondasi prospek
 - Tambahkan migrasi/model/factory untuk kontak, prospek, dan aktivitas CRM tanpa mengubah migrasi lama atau kontrak webhook.

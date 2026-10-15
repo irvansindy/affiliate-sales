@@ -61,6 +61,7 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Dashboard: total klik, total penjualan, komisi pending/approved/paid.
 - Kode referral unik per affiliator; panel affiliator menampilkan link siap salin per produk aktif memakai `/r/{referral_code}?product=KODE_PRODUK`. Produk tanpa URL tujuan ditandai belum siap, tanpa link yang dapat disalin. Admin mengisi URL halaman tujuan tiap produk sebelum link dapat digunakan.
 - Daftar penjualan yang teratribusi (filter tanggal, produk, tipe pembelian, status).
+- Pengajuan penjualan awal manual: affiliator memilih produk dan tipe pembelian, mengisi identitas pelanggan serta referensi pembayaran opsional, dan wajib mengunggah bukti pembayaran privat. Affiliator tidak mengisi nominal atau komisi. Pengajuan belum menjadi transaksi/komisi sampai diverifikasi admin.
 - Daftar komisi dan statusnya.
 - Riwayat pembayaran komisi.
 - Profil dan data rekening pembayaran.
@@ -75,9 +76,11 @@ Tidak ada role lain (tidak ada customer login, tidak ada super-admin terpisah, t
 - Admin boleh mengaktifkan kembali affiliator yang suspended atau rejected. Reaktivasi mencatat waktu persetujuan baru; suspend mempertahankan tanggal persetujuan sebelumnya.
 - Manajemen produk (Website, Mobile Apps) dan tipe pembelian.
 - Manajemen penjualan: lihat, input manual, tandai refund/batal.
+- Verifikasi pengajuan penjualan: admin melihat bukti, lalu menolak dengan alasan atau menyetujui dengan referensi akhir unik dan rincian pembayaran (`base_amount` sebelum PPN, diskon, PPN, total, waktu bayar, serta paket subscription bila perlu). Approval mencatat transaksi awal melalui `RecordTransaction`; komisi otomatis memakai rate global saat itu. Referensi akhir yang sama tidak boleh tercatat dua kali, termasuk bila kelak diterima lewat webhook.
 - Manajemen komisi: review, approve, reject.
 - Manajemen pembayaran (payout): buat batch pembayaran dari komisi `approved`, tandai `paid` dengan bukti transfer, atau tandai `failed` saat transfer gagal.
 - Pengaturan: rate komisi default, masa tunggu approval, minimum payout.
+- Admin dapat mengubah rate komisi global untuk transaksi baru; komisi lama mempertahankan snapshot rate-nya. Tidak ada override rate per transaksi.
 - Ekspor detail transaksi dan komisi (CSV/Excel) melalui queue; hasil unduhan hanya dapat diakses admin pemilik ekspor.
 - Audit log aktivitas penting.
 - Tampilan seluruh kontak, prospek, tahapan penjualan, dan tindak lanjut affiliator.
