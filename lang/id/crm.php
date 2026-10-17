@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'contact' => 'Kontak',
+    'contacts' => 'Kontak',
+    'lead' => 'Prospek',
+    'leads' => 'Prospek',
+    'product' => 'Produk',
+    'stage' => 'Tahap',
+    'notes' => 'Catatan',
+    'next_due_at' => 'Tindak lanjut terdekat',
+    'overdue' => 'Lewat jadwal',
+    'activity' => 'Aktivitas',
+    'activities' => 'Aktivitas',
+    'type' => 'Jenis',
+    'summary' => 'Ringkasan',
+    'occurred_at' => 'Waktu interaksi',
+    'due_at' => 'Jadwal tindak lanjut',
+    'completed_at' => 'Selesai pada',
+    'complete' => 'Tandai selesai',
+    'empty_leads' => 'Belum ada prospek',
+    'empty_leads_description' => 'Tambahkan kontak untuk mulai mencatat peluang penjualan.',
+    'empty_activities' => 'Belum ada aktivitas',
+    'stages' => ['new' => 'Baru', 'contacted' => 'Dihubungi', 'proposal' => 'Penawaran', 'negotiation' => 'Negosiasi', 'won' => 'Menang', 'lost' => 'Kalah'],
+    'types' => ['interaction' => 'Interaksi', 'follow_up' => 'Tindak lanjut'],
+    'affiliate' => 'Affiliator',
+    'name' => 'Nama kontak',
+    'email' => 'Email',
+    'phone' => 'Telepon',
+    'company' => 'Perusahaan',
+    'empty_contacts' => 'Belum ada kontak',
+    'empty_contacts_description' => 'Tambahkan kontak pelanggan untuk mulai mencatat peluang penjualan.',
+    'validation' => [
+        'owner_immutable' => 'Pemilik data CRM yang sudah dibuat tidak dapat diubah.',
+        'due_required' => 'Jadwal wajib diisi untuk tindak lanjut.',
+        'due_for_follow_up_only' => 'Jadwal hanya boleh diisi untuk tindak lanjut.',
+        'not_open_follow_up' => 'Hanya tindak lanjut yang belum selesai yang dapat ditandai selesai.',
+    ],
+];

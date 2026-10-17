@@ -66,6 +66,16 @@ class Affiliate extends Model
         return $this->hasMany(ReferralClick::class);
     }
 
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(CrmContact::class);
+    }
+
+    public function leads(): HasMany
+    {
+        return $this->hasMany(CrmLead::class);
+    }
+
     public function isActive(): bool
     {
         return $this->status === AffiliateStatus::Active;

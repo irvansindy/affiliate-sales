@@ -24,4 +24,9 @@ class Product extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function leads(): HasMany
+    {
+        return $this->hasMany(CrmLead::class);
+    }
 }

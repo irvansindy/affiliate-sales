@@ -36,7 +36,7 @@ Affiliator ──┘    (/admin, /affiliate)      │  CRM · Actions · Service
 | Error monitoring | Sentry (opsional) | Pelacakan error produksi |
 | Testing | Pest/PHPUnit | Wajib untuk logika komisi |
 | Kualitas kode | Laravel Pint, Larastan | Konsistensi dan static analysis |
-| Deployment | **Docker** (nginx + php-fpm + MySQL + Redis) | Mudah direplikasi, konsisten antar lingkungan |
+| Deployment | **Docker di server** (nginx + php-fpm + Redis; MySQL eksternal) | Lokal tetap manual; server memakai user database khusus proyek |
 
 **Mengapa bukan SPA terpisah (React/Next.js + API)?** Dengan hanya dua role dan fokus pada dashboard/tabel/form, pendekatan full-stack Laravel + Filament jauh lebih cepat dan murah dirawat. Jika nanti butuh aplikasi mobile affiliator, API ditambahkan di atas Service/Action yang sama (Sanctum).
 
@@ -317,9 +317,10 @@ Jika checkout berada di domain yang sama, `ref` dapat dibaca dari cookie; prinsi
 
 ## Deployment
 
-- Container: `app` (php-fpm), `nginx`, `mysql`, `redis`, `queue` (worker), `scheduler`.
-- Environment: `local`, `staging`, `production` dengan `.env` terpisah.
-- HTTPS wajib; terminasi TLS di reverse proxy.
+- Container: `app` (php-fpm), `nginx`, `redis`, `queue` (worker), `scheduler`; MySQL berada di external Docker network, tanpa container MySQL baru.
+- Lokal tetap berjalan manual (`php artisan serve`, `npm run dev`) dengan database saat ini. Docker hanya disiapkan untuk server Ubuntu, memakai `compose.yaml` dan image hasil build.
+- Environment server di `.env.docker` yang tidak masuk Git, dengan user MySQL khusus AffiliateHub. HTTPS wajib diterminasi di reverse proxy ketika deployment VPS dilakukan.
+- Jika data SQLite lokal perlu dibawa ke server, `app:import-legacy-sqlite` menyalinnya ke database MySQL kosong; panduan dan backup ada di `docs/DOCKER.md`.
 - Perintah rilis: `php artisan migrate --force`, `config:cache`, `route:cache`, `view:cache`, `filament:optimize`.
 - Queue worker dikelola supervisor/restart policy Docker.
 - CI: jalankan Pint, Larastan, dan test pada setiap pull request.

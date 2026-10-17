@@ -29,14 +29,20 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - [x] T8: payout manual dengan snapshot rekening, bukti privat, kegagalan transfer, audit log, dan notifikasi email
 - [x] T9 dimajukan ke T5: `HandleRefund` membatalkan komisi belum dibayar dan mencatat refund setelah komisi dibayar tanpa clawback
 - [x] T10: dashboard affiliator, daftar penjualan/komisi/payout milik sendiri, profil dan rekening termask
+- [x] T11: dashboard admin dan ekspor laporan melalui queue
 - [x] T11A: katalog link referral siap salin di panel affiliator dan detail affiliator admin
 - [x] T11B: pengajuan penjualan manual affiliator, bukti wajib privat, verifikasi admin, transaksi/komisi atomik, dan pengaturan rate global admin
-- [x] Scope CRM sederhana disetujui dan dicatat dalam PRD, arsitektur, design system, dan roadmap; implementasi dijadwalkan pada T12–T13
+- [x] T12: kontak pelanggan dan fondasi prospek CRM
+- [x] T13: pipeline prospek dan tindak lanjut CRM
+- [x] Panduan pengguna untuk admin dan affiliator berdasarkan alur panel yang tersedia
+
+### Sedang dikerjakan
+- [ ] T14: persiapan Docker untuk server; build image dan verifikasi deployment belum selesai
 
 ### Perlu dipastikan lebih dulu (T0)
 - [x] `php artisan test` hijau (28 test, 53 assertion pada penyelesaian T1).
 
-## Tugas berikutnya (urut)
+## Rincian tugas (urut)
 
 ### T1. Panel Filament dan akses berbasis role — Selesai
 - Pasang Filament (versi terbaru yang kompatibel dengan Laravel 13; catat versinya di `AGENTS.md` setelah terpasang).
@@ -131,20 +137,27 @@ Aturan umum ada di `AGENTS.md`. Scope dan aturan bisnis ada di `docs/PRD.md`, ko
 - Rate komisi global dapat diubah admin untuk transaksi baru; rate komisi lama tetap snapshot. Seluruh keputusan admin dan perubahan rate diaudit, akses panel serta data dibatasi oleh Policy.
 - Verifikasi: `php artisan test` lulus 194 test/944 assertion; `./vendor/bin/pint` lulus.
 
-### T12. CRM: kontak dan fondasi prospek
+### T12. CRM: kontak dan fondasi prospek — Selesai
 - Tambahkan migrasi/model/factory untuk kontak, prospek, dan aktivitas CRM tanpa mengubah migrasi lama atau kontrak webhook.
 - Kontak dan prospek wajib dimiliki satu affiliator; produk pada prospek mengacu ke `products`. Validasi kontak dan prospek harus milik affiliator yang sama.
 - Policy dan query membatasi affiliator aktif ke data miliknya; admin boleh mengelola semua. Test akses lintas affiliator, termasuk URL record langsung dan aktivitas.
 - Resource kontak pada panel admin dan affiliate: daftar, cari, tambah, ubah. Gunakan teks Bahasa Indonesia, filter/pagination, serta state loading/empty/error.
+- Implementasi memakai `SaveCrmContact` dan `SaveCrmLead` untuk validasi kepemilikan server, Policy dan query Resource untuk isolasi data, serta foreign key gabungan pada prospek. Perubahan kontak/prospek diaudit; tahap `won` tetap terpisah dari transaksi dan komisi.
+- Test CRM mencakup akses lintas affiliator, URL langsung, form panel, dan aktivitas.
 
-### T13. CRM: pipeline dan tindak lanjut
+### T13. CRM: pipeline dan tindak lanjut — Selesai
 - Resource prospek pada kedua panel: pilih kontak/produk, tahap `new|contacted|proposal|negotiation|won|lost`, daftar dan filter per tahap.
 - Catat aktivitas interaksi dan tindak lanjut dengan waktu jatuh tempo serta aksi tandai selesai. Tampilkan tindak lanjut yang lewat jadwal.
 - Tahap `won` tidak membuat transaksi atau komisi. Penjualan berbayar tetap melewati `RecordTransaction` dari webhook atau input manual admin.
 - Test validasi kepemilikan, perubahan tahap, jadwal tindak lanjut, dan isolasi CRM dari alur uang.
+- Implementasi memakai `SaveCrmLead`, `SaveCrmActivity`, dan `CompleteCrmFollowUp`; Resource prospek kedua panel menyediakan filter tahap serta penanda tindak lanjut lewat jadwal. Aktivitas dikelola pada prospek melalui Relation Manager, dengan Policy pemilik dan audit log.
+- Verifikasi: `php artisan test` lulus 212 test/1.027 assertion; `./vendor/bin/pint` lulus.
 
-### T14. Produksi
-- Docker (nginx + php-fpm + MySQL + Redis + queue worker + scheduler), `.env` produksi, backup database, HTTPS.
+### T14. Persiapan Docker server — Sedang dikerjakan
+- Lokal tetap berjalan manual; tidak perlu Docker atau migrasi SQLite ke MySQL di lokal.
+- Compose server menyiapkan nginx, php-fpm, Redis, queue worker, dan scheduler. MySQL eksternal diakses melalui Docker network; server wajib memakai user database khusus proyek dan tidak membuat container/image MySQL baru.
+- Template `.env.docker`, image server, backup MySQL dan storage, serta perintah impor SQLite opsional untuk migrasi data ke server telah disiapkan. Panduan ada di `docs/DOCKER.md`.
+- Konfigurasi Compose, `sh -n docker/backup.sh`, `php artisan test` (215 test/1.034 assertion), `./vendor/bin/pint`, dan `npm run build` telah lulus. Build image dan verifikasi deployment tetap pending hingga kapasitas disk/server tersedia; HTTPS akan disiapkan saat VPS tersedia.
 
 ## Area yang wajib direview manusia sebelum merge
 

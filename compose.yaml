@@ -1,0 +1,77 @@
+x-php-service: &php-service
+  image: affiliatehub-app:local
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+    target: app
+    args:
+      APP_UID: ${APP_UID:-1000}
+      APP_GID: ${APP_GID:-1000}
+  env_file: ${APP_ENV_FILE:-.env.docker}
+  user: "${APP_UID:-1000}:${APP_GID:-1000}"
+  volumes:
+    - ./storage:/var/www/html/storage
+  networks:
+    - internal
+    - shared_mysql
+  restart: unless-stopped
+  init: true
+
+services:
+  app:
+    <<: *php-service
+    command: php-fpm
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: affiliatehub-web:local
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: web
+    ports:
+      - "${APP_BIND_IP:-127.0.0.1}:${APP_HTTP_PORT:-8888}:80"
+    networks:
+      - internal
+    depends_on:
+      - app
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  queue:
+    <<: *php-service
+    command: php artisan queue:work redis --sleep=3 --tries=3 --timeout=90
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  scheduler:
+    <<: *php-service
+    command: php artisan schedule:work
+    depends_on:
+      redis:
+        condition: service_healthy
+
+networks:
+  internal:
+  shared_mysql:
+    external: true
+    name: ${MYSQL_DOCKER_NETWORK:-shared_network}
+
+volumes:
+  redis_data:
